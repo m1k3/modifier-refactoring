@@ -4,6 +4,7 @@
 # - block combining two elements having the same key or a single element, if there is no partner
 # output:
 # - enumerator for the combined elements
+require_relative 'ext'
 class Combiner
 
   def initialize(&key_extractor)
@@ -11,13 +12,14 @@ class Combiner
   end
 
   def combine(*enumerators)
+    enumerators = enumerators.map{|e| e.nil_enum}
     Enumerator.new do |yielder|
       last_values = Array.new(enumerators.size)
-      done = enumerators.all? { |enumerator| enumerator.nil? }
+      done = enumerators.all? { |enumerator| enumerator.peek.nil? }
       while not done
         last_values = pick_candidate_values_from_enums(last_values, enumerators)
 
-        done = enumerators.all? { |enumerator| enumerator.nil? } and last_values.all? { |enumerator| enumerator.nil? }
+        done = last_values.all? { |last_value| last_value.nil? }
         unless done
           values = pick_values_from_candidate_values(last_values)
           last_values = remove_picked_values(last_values)
@@ -49,12 +51,8 @@ class Combiner
 
     def pick_candidate_values_from_enums(last_values, enumerators)
       last_values.map.each_with_index do |value, index|
-        if value.nil? && !enumerators[index].nil?
-          begin
-            enumerators[index].next
-          rescue StopIteration
-            enumerators[index] = nil
-          end
+        if value.nil? && !enumerators[index].peek.nil?
+          enumerators[index].next
         else
           value
         end

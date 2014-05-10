@@ -2,11 +2,7 @@ require File.expand_path('spec_helper', File.dirname(__FILE__))
 require 'combiner'
 
 def read_from_enumerator(enumerator)
-  result = []
-  loop do
-    result << enumerator.next
-  end
-  result
+  enumerator.to_a
 end
 
 RSpec::Matchers.define :be_empty do
