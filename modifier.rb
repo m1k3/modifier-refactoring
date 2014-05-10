@@ -18,18 +18,6 @@ def latest(name)
   files.last
 end
 
-class String
-  def from_german_to_f
-    self.gsub(',', '.').to_f
-  end
-end
-
-class Float
-  def to_german_s
-    self.to_s.gsub('.', ',')
-  end
-end
-
 # aaded to ease refactoring
 require 'fileutils'
 def cleanup(name)

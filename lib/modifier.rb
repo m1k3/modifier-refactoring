@@ -1,5 +1,8 @@
 require 'csv'
 
+require_relative 'core_ext/string'
+require_relative 'core_ext/float'
+
 class Modifier
 
   KEYWORD_UNIQUE_ID = 'Keyword Unique ID'
