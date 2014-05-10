@@ -4,7 +4,8 @@
 # - block combining two elements having the same key or a single element, if there is no partner
 # output:
 # - enumerator for the combined elements
-require_relative 'ext'
+require_relative 'core_ext/nil_enumerator'
+
 class Combiner
 
   def initialize(&key_extractor)

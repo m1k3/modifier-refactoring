@@ -19,3 +19,10 @@ class NilEnumerator < Enumerator
     end
   end
 end
+
+class Enumerator
+  def to_nil_enum
+    NilEnumerator.new(self)
+  end
+  alias_method :nil_enum, :to_nil_enum
+end
