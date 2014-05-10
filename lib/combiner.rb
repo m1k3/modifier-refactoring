@@ -15,11 +15,12 @@ class Combiner
       last_values = Array.new(enumerators.size)
       done = enumerators.all? { |enumerator| enumerator.nil? }
       while not done
-        pick_candidate_values_from_enums(last_values, enumerators)
+        last_values = pick_candidate_values_from_enums(last_values, enumerators)
 
-        done = enumerators.all? { |enumerator| enumerator.nil? } and last_values.compact.empty?
+        done = enumerators.all? { |enumerator| enumerator.nil? } and last_values.all? { |enumerator| enumerator.nil? }
         unless done
           values = pick_values_from_candidate_values(last_values)
+          last_values = remove_picked_values(last_values)
 
           yielder.yield(values)
         end
@@ -32,26 +33,30 @@ class Combiner
       value.nil? ? nil : @key_extractor.call(value)
     end
 
+    def remove_picked_values(last_values)
+      min_key = min_key(last_values)
+      last_values.map do |value|
+        value if key(value) != min_key
+      end
+    end
+
     def pick_values_from_candidate_values(last_values)
       min_key = min_key(last_values)
-      values = Array.new(last_values.size)
-      last_values.each_with_index do |value, index|
-        if key(value) == min_key
-          values[index] = value
-          last_values[index] = nil
-        end
+      last_values.map do |value|
+        value if key(value) == min_key
       end
-      values
     end
 
     def pick_candidate_values_from_enums(last_values, enumerators)
-      last_values.each_with_index do |value, index|
-        if value.nil? and not enumerators[index].nil?
+      last_values.map.each_with_index do |value, index|
+        if value.nil? && !enumerators[index].nil?
           begin
-            last_values[index] = enumerators[index].next
+            enumerators[index].next
           rescue StopIteration
             enumerators[index] = nil
           end
+        else
+          value
         end
       end
     end
