@@ -14,53 +14,35 @@ class Combiner
   def combine(*enumerators)
     enumerators = enumerators.map{|e| e.nil_enum}
     Enumerator.new do |yielder|
-      last_values = Array.new(enumerators.size)
-      done = enumerators.all? { |enumerator| enumerator.peek.nil? }
-      while not done
-        last_values = pick_candidate_values_from_enums(last_values, enumerators)
-
-        done = last_values.all? { |last_value| last_value.nil? }
-        unless done
-          values = pick_values_from_candidate_values(last_values)
-          last_values = remove_picked_values(last_values)
-
-          yielder.yield(values)
-        end
+      while !done(enumerators)
+        yielder.yield(pick_min_values_from_enums(enumerators))
       end
     end
   end
 
   private
+    def done(enumerators)
+      enumerators.all? { |enumerator| enumerator.peek.nil? }
+    end
+
+    def last_keys(enumerators)
+      enumerators.map { |enumerator| key(enumerator.peek) }
+    end
+
+    def pick_min_values_from_enums(enumerators)
+      min_key = min_key(last_keys(enumerators))
+
+      enumerators.map do |enumerator|
+        enumerator.next if key(enumerator.peek) == min_key
+      end
+    end
+
     def key(value)
       value.nil? ? nil : @key_extractor.call(value)
     end
 
-    def remove_picked_values(last_values)
-      min_key = min_key(last_values)
-      last_values.map do |value|
-        value if key(value) != min_key
-      end
-    end
-
-    def pick_values_from_candidate_values(last_values)
-      min_key = min_key(last_values)
-      last_values.map do |value|
-        value if key(value) == min_key
-      end
-    end
-
-    def pick_candidate_values_from_enums(last_values, enumerators)
-      last_values.map.each_with_index do |value, index|
-        if value.nil? && !enumerators[index].peek.nil?
-          enumerators[index].next
-        else
-          value
-        end
-      end
-    end
-
-    def min_key(last_values)
-      last_values.map { |e| key(e) }.min do |a, b|
+    def min_key(last_keys)
+      last_keys.min do |a, b|
         if a.nil? and b.nil?
           0
         elsif a.nil?
