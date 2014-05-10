@@ -4,11 +4,7 @@ require 'combiner'
 def read_from_enumerator(enumerator)
   result = []
   loop do
-    begin
-      result << enumerator.next
-    rescue StopIteration
-      break
-    end
+    result << enumerator.next
   end
   result
 end
