@@ -1,6 +1,7 @@
 module CMA
   class Modifier
 
+    DEFAULT_CSV_OPTIONS = { :col_sep => "\t", :headers => :first_row }
     KEYWORD_UNIQUE_ID = 'Keyword Unique ID'
     LAST_VALUE_WINS = ['Account ID', 'Account Name', 'Campaign', 'Ad Group', 'Keyword', 'Keyword Type', 'Subid', 'Paused', 'Max CPC', 'Keyword Unique ID', 'ACCOUNT', 'CAMPAIGN', 'BRAND', 'BRAND+CATEGORY', 'ADGROUP', 'KEYWORD']
     LAST_REAL_VALUE_WINS = ['Last Avg CPC', 'Last Avg Pos']
@@ -147,8 +148,6 @@ module CMA
         end
         result
       end
-
-      DEFAULT_CSV_OPTIONS = { :col_sep => "\t", :headers => :first_row }
 
       def lazy_read(file)
         Enumerator.new do |yielder|
