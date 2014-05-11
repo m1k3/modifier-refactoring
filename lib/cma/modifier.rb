@@ -34,17 +34,11 @@ module CMA
         file_index = 0
         file_name = output.gsub('.txt', '')
         while merger.peek do
-          CSV.open(file_name + "_#{file_index}.txt", "wb", DEFAULT_WRITE_CSV_OPTIONS) do |csv|
-            headers_written = false
-            line_count = 0
+          CSV.open("#{file_name}_#{file_index}.txt", "wb", DEFAULT_WRITE_CSV_OPTIONS) do |csv|
+            csv << merger.peek.keys
+            line_count = 1
             while merger.peek && line_count < LINES_PER_FILE
-              merged = merger.next
-              if not headers_written
-                csv << merged.keys
-                headers_written = true
-                line_count +=1
-              end
-              csv << merged
+              csv << merger.next
               line_count +=1
             end
             file_index += 1
