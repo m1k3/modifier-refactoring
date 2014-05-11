@@ -31,27 +31,21 @@ module CMA
 
     private
       def write_output(output, merger)
-        done = false
         file_index = 0
         file_name = output.gsub('.txt', '')
-        while not done do
+        while merger.peek do
           CSV.open(file_name + "_#{file_index}.txt", "wb", DEFAULT_WRITE_CSV_OPTIONS) do |csv|
             headers_written = false
             line_count = 0
-            while line_count < LINES_PER_FILE
-              begin
-                merged = merger.next
-                if not headers_written
-                  csv << merged.keys
-                  headers_written = true
-                  line_count +=1
-                end
-                csv << merged
+            while merger.peek && line_count < LINES_PER_FILE
+              merged = merger.next
+              if not headers_written
+                csv << merged.keys
+                headers_written = true
                 line_count +=1
-              rescue StopIteration
-                done = true
-                break
               end
+              csv << merged
+              line_count +=1
             end
             file_index += 1
           end
@@ -60,22 +54,18 @@ module CMA
 
       def merger_from(combiner)
         Enumerator.new do |yielder|
-          while true
-            begin
-              list_of_rows = combiner.next
-              merged = combine_hashes(list_of_rows)
-              yielder.yield(combine_values(merged))
-            rescue StopIteration
-              break
-            end
+          while combiner.peek
+            list_of_rows = combiner.next
+            merged = combine_hashes(list_of_rows)
+            yielder.yield(combine_values(merged))
           end
-        end
+        end.nil_enum
       end
 
       def combiner_from(input_enumerator)
         Combiner.new do |value|
           value[KEYWORD_UNIQUE_ID]
-        end.combine(input_enumerator)
+        end.combine(input_enumerator).nil_enum
       end
 
       def combine_values(hash)
