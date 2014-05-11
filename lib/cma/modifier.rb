@@ -101,14 +101,6 @@ module CMA
         end.combine(input_enumerator)
       end
 
-      def combine(merged)
-        result = []
-        merged.each do |_, hash|
-          result << combine_values(hash)
-        end
-        result
-      end
-
       def combine_values(hash)
         LAST_VALUE_WINS.each do |key|
           hash[key] = hash[key].last
