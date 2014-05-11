@@ -83,3 +83,6 @@ I'd like you to do the following:
 14. Teasing out the merger class where the merge code can live. It could
     be also split, because there are the transformation methods, but
     this seems to be enough.
+
+15. Ran out of time so I am doing one more refactoring on Merger#combine_hashes
+    and calling it.
