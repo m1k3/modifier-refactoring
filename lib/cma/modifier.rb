@@ -1,7 +1,5 @@
-require 'csv'
-
-module CancellationAdjuster
-  class Base
+module CMA
+  class Modifier
 
     KEYWORD_UNIQUE_ID = 'Keyword Unique ID'
     LAST_VALUE_WINS = ['Account ID', 'Account Name', 'Campaign', 'Ad Group', 'Keyword', 'Keyword Type', 'Subid', 'Paused', 'Max CPC', 'Keyword Unique ID', 'ACCOUNT', 'CAMPAIGN', 'BRAND', 'BRAND+CATEGORY', 'ADGROUP', 'KEYWORD']

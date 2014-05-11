@@ -1,5 +1,4 @@
-require File.expand_path('spec_helper', File.dirname(__FILE__))
-require 'combiner'
+require 'spec_helper'
 
 def read_from_enumerator(enumerator)
   enumerator.to_a
@@ -22,10 +21,10 @@ RSpec::Matchers.define :return_elements do |*expected|
   end
 end
 
-describe Combiner do
+describe CMA::Combiner do
   let(:key_extractor) { Proc.new {|arg| arg} }
   let(:input_enumerators) { [] }
-  let(:combiner) { Combiner.new(&key_extractor) }
+  let(:combiner) { described_class.new(&key_extractor) }
 
   def enumerator_for(*array)
     array.to_enum :each

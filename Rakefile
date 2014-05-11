@@ -1,7 +1,24 @@
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-require 'cancellation_adjuster'
+require 'cma'
+
+def latest(name)
+  files = Dir["#{ ENV["HOME"] }/workspace/*#{name}*.txt"]
+
+  files.sort_by! do |file|
+    last_date = /\d+-\d+-\d+_[[:alpha:]]+\.txt$/.match file
+    last_date = last_date.to_s.match(/\d+-\d+-\d+/)
+
+    date = DateTime.parse(last_date.to_s)
+    date
+  end
+
+  throw RuntimeError if files.empty?
+
+  files.last
+end
+
 
 task :clean do
   FileUtils.rm Dir["#{ ENV["HOME"] }/workspace/*.txt.sorted"]
@@ -13,8 +30,8 @@ task adjust_for_cancellation: :clean do
   modification_factor = ENV['modification_factor'] || 1
   cancellaction_factor = ENV['cancellaction_factor'] || 0.4
 
-  modified = input = CancellationAdjuster.latest(filename)
-  modifier = CancellationAdjuster::Base.new(modification_factor.to_f, cancellaction_factor.to_f)
+  modified = input = latest(filename)
+  modifier = CMA::Modifier.new(modification_factor.to_f, cancellaction_factor.to_f)
   modifier.modify(modified, input)
 
   puts "DONE modifying"
