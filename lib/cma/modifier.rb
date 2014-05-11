@@ -1,7 +1,7 @@
 module CMA
-  class Modifier
+  DEFAULT_CSV_OPTIONS = { :col_sep => "\t", :headers => :first_row }
 
-    DEFAULT_CSV_OPTIONS = { :col_sep => "\t", :headers => :first_row }
+  class Modifier
     KEYWORD_UNIQUE_ID = 'Keyword Unique ID'
     LAST_VALUE_WINS = ['Account ID', 'Account Name', 'Campaign', 'Ad Group', 'Keyword', 'Keyword Type', 'Subid', 'Paused', 'Max CPC', 'Keyword Unique ID', 'ACCOUNT', 'CAMPAIGN', 'BRAND', 'BRAND+CATEGORY', 'ADGROUP', 'KEYWORD']
     LAST_REAL_VALUE_WINS = ['Last Avg CPC', 'Last Avg Pos']
@@ -29,30 +29,6 @@ module CMA
 
 
     private
-      class Sorter
-        def self.sort(file)
-          output = "#{file}.sorted"
-          content_as_table = parse(file)
-          headers = content_as_table.headers
-          index_of_key = headers.index('Clicks')
-          content = content_as_table.sort_by { |a| -a[index_of_key].to_i }
-          write(content, headers, output)
-
-          output
-        end
-        def self.write(content, headers, output)
-          CSV.open(output, "wb", { :col_sep => "\t", :headers => :first_row, :row_sep => "\r\n" }) do |csv|
-            csv << headers
-            content.each do |row|
-              csv << row
-            end
-          end
-        end
-        def self.parse(file)
-          CSV.read(file, DEFAULT_CSV_OPTIONS)
-        end
-      end
-
       def write_output(output, merger)
         done = false
         file_index = 0
