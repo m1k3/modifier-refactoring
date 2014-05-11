@@ -1,5 +1,6 @@
 module CMA
-  DEFAULT_CSV_OPTIONS = { :col_sep => "\t", :headers => :first_row }
+  DEFAULT_CSV_OPTIONS = { col_sep: "\t", headers: :first_row }
+  DEFAULT_WRITE_CSV_OPTIONS = DEFAULT_CSV_OPTIONS.merge(row_sep: "\r\n")
 
   class Modifier
     KEYWORD_UNIQUE_ID = 'Keyword Unique ID'
@@ -34,7 +35,7 @@ module CMA
         file_index = 0
         file_name = output.gsub('.txt', '')
         while not done do
-          CSV.open(file_name + "_#{file_index}.txt", "wb", { :col_sep => "\t", :headers => :first_row, :row_sep => "\r\n" }) do |csv|
+          CSV.open(file_name + "_#{file_index}.txt", "wb", DEFAULT_WRITE_CSV_OPTIONS) do |csv|
             headers_written = false
             line_count = 0
             while line_count < LINES_PER_FILE
