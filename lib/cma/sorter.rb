@@ -1,25 +1,35 @@
 module CMA
   class Sorter
-    def self.sort(file)
-      output = "#{file}.sorted"
-      content_as_table = parse(file)
-      headers = content_as_table.headers
-      index_of_key = headers.index('Clicks')
-      content = content_as_table.sort_by { |a| -a[index_of_key].to_i }
-      write(content, headers, output)
+    def initialize(file)
+      @file = file
+    end
+
+    def sort
+      write(content, content_as_table.headers)
 
       output
     end
-    def self.write(content, headers, output)
-      CSV.open(output, "wb", DEFAULT_WRITE_CSV_OPTIONS) do |csv|
-        csv << headers
-        content.each do |row|
-          csv << row
+
+    private
+      def content
+        content_as_table.sort_by { |a| -a['Clicks'].to_i }
+      end
+
+      def output
+        "#{@file}.sorted"
+      end
+
+      def write(content, headers)
+        CSV.open(output, "wb", DEFAULT_WRITE_CSV_OPTIONS) do |csv|
+          csv << headers
+          content.each do |row|
+            csv << row
+          end
         end
       end
-    end
-    def self.parse(file)
-      CSV.read(file, DEFAULT_CSV_OPTIONS)
-    end
+
+      def content_as_table
+        @content_as_table ||= CSV.read(@file, DEFAULT_CSV_OPTIONS)
+      end
   end
 end

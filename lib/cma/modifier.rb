@@ -12,9 +12,9 @@ module CMA
     end
 
     def modify(output, input)
-      input = Sorter.sort(input)
+      sorted_input = Sorter.new(input).sort
 
-      input_enumerator = lazy_read(input)
+      input_enumerator = lazy_read(sorted_input)
 
       adjuster = adjuster_from(input_enumerator)
 
