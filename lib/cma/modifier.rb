@@ -8,7 +8,7 @@ module CMA
     LINES_PER_FILE = 120000
 
     def initialize(saleamount_factor, cancellation_factor)
-      @merger = Merger.new(saleamount_factor, cancellation_factor)
+      @adjuster = Adjuster.new(saleamount_factor, cancellation_factor)
     end
 
     def modify(output, input)
@@ -16,22 +16,22 @@ module CMA
 
       input_enumerator = lazy_read(input)
 
-      merger = merger_from(input_enumerator)
+      adjuster = adjuster_from(input_enumerator)
 
-      write_output(output, merger)
+      write_output(output, adjuster)
     end
 
 
     private
-      def write_output(output, merger)
+      def write_output(output, adjuster)
         file_index = 0
         file_name = output.gsub('.txt', '')
-        while merger.peek do
+        while adjuster.peek do
           CSV.open("#{file_name}_#{file_index}.txt", "wb", DEFAULT_WRITE_CSV_OPTIONS) do |csv|
-            csv << merger.peek.headers
+            csv << adjuster.peek.headers
             line_count = 1
-            while merger.peek && line_count < LINES_PER_FILE
-              csv << merger.next
+            while adjuster.peek && line_count < LINES_PER_FILE
+              csv << adjuster.next
               line_count +=1
             end
             file_index += 1
@@ -39,16 +39,12 @@ module CMA
         end
       end
 
-      def merger_from(combiner)
-        @merger.enum_for(combiner).nil_enum
+      def adjuster_from(input)
+        @adjuster.enum_for(input).nil_enum
       end
 
       def lazy_read(file)
-        Enumerator.new do |yielder|
-          CSV.foreach(file, DEFAULT_CSV_OPTIONS) do |row|
-            yielder.yield(row)
-          end
-        end.nil_enum
+        CSV.to_enum(:foreach, file, DEFAULT_CSV_OPTIONS)
       end
   end
 end

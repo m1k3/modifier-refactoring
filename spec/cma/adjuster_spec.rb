@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe CMA::Merger do
+describe CMA::Adjuster do
 
   subject { described_class.new(1, 0.4) }
 

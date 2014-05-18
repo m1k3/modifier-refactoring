@@ -1,5 +1,5 @@
 module CMA
-  class Merger
+  class Adjuster
     LAST_VALUE_WINS = ['Account ID', 'Account Name', 'Campaign', 'Ad Group', 'Keyword', 'Keyword Type', 'Subid', 'Paused', 'Max CPC', 'Keyword Unique ID', 'ACCOUNT', 'CAMPAIGN', 'BRAND', 'BRAND+CATEGORY', 'ADGROUP', 'KEYWORD']
     LAST_REAL_VALUE_WINS = ['Last Avg CPC', 'Last Avg Pos']
     INT_VALUES = ['Clicks', 'Impressions', 'ACCOUNT - Clicks', 'CAMPAIGN - Clicks', 'BRAND - Clicks', 'BRAND+CATEGORY - Clicks', 'ADGROUP - Clicks', 'KEYWORD - Clicks']
@@ -12,10 +12,10 @@ module CMA
       @cancellation_factor = cancellation_factor
     end
 
-    def enum_for(combiner)
+    def enum_for(input)
       Enumerator.new do |yielder|
-        while combiner.peek
-          row = combiner.next
+        while input.peek
+          row = input.next
           yielder.yield(adjust_values(row))
         end
       end
