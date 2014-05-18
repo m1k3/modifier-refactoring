@@ -21,31 +21,30 @@ module CMA
       write_output(output, adjuster)
     end
 
-
     private
 
-      def write_output(output, adjuster)
-        file_index = 0
-        file_name = output.gsub('.txt', '')
-        while adjuster.peek do
-          CSV.open("#{file_name}_#{file_index}.txt", "wb", DEFAULT_WRITE_CSV_OPTIONS) do |csv|
-            csv << adjuster.peek.headers
-            line_count = 1
-            while adjuster.peek && line_count < LINES_PER_FILE
-              csv << adjuster.next
-              line_count += 1
-            end
-            file_index += 1
+    def write_output(output, adjuster)
+      file_index = 0
+      file_name = output.gsub('.txt', '')
+      while adjuster.peek do
+        CSV.open("#{file_name}_#{file_index}.txt", 'wb', DEFAULT_WRITE_CSV_OPTIONS) do |csv|
+          csv << adjuster.peek.headers
+          line_count = 1
+          while adjuster.peek && line_count < LINES_PER_FILE
+            csv << adjuster.next
+            line_count += 1
           end
+          file_index += 1
         end
       end
+    end
 
-      def adjuster_from(input)
-        @adjuster.enum_for(input).nil_enum
-      end
+    def adjuster_from(input)
+      @adjuster.enum_for(input).nil_enum
+    end
 
-      def lazy_read(file)
-        CSV.to_enum(:foreach, file, DEFAULT_CSV_OPTIONS)
-      end
+    def lazy_read(file)
+      CSV.to_enum(:foreach, file, DEFAULT_CSV_OPTIONS)
+    end
   end
 end
