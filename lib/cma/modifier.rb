@@ -26,8 +26,10 @@ module CMA
     def write_output(output, adjuster)
       file_index = 0
       file_name = output.gsub('.txt', '')
-      while adjuster.peek do
-        CSV.open("#{file_name}_#{file_index}.txt", 'wb', DEFAULT_WRITE_CSV_OPTIONS) do |csv|
+      while adjuster.peek
+        CSV.open("#{file_name}_#{file_index}.txt",
+                 'wb',
+                 DEFAULT_WRITE_CSV_OPTIONS) do |csv|
           csv << adjuster.peek.headers
           line_count = 1
           while adjuster.peek && line_count < LINES_PER_FILE
