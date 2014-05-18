@@ -15,44 +15,31 @@ module CMA
     def enum_for(combiner)
       Enumerator.new do |yielder|
         while combiner.peek
-          list_of_rows = combiner.next
-          merged = combine_hashes(list_of_rows)
-          yielder.yield(combine_values(merged))
+          row = combiner.next
+          yielder.yield(adjust_values(row))
         end
-      end.nil_enum
+      end
     end
 
     private
 
-      def combine_values(hash)
-        LAST_VALUE_WINS.each do |key|
-          hash[key] = hash[key].last
-        end
+      def adjust_values(hash)
         LAST_REAL_VALUE_WINS.each do |key|
-          hash[key] = hash[key].select {|v| not (v.nil? or v == 0 or v == '0' or v == '')}.last
+          hash[key] = nil if [0, '0', ''].include?(hash[key])
         end
         INT_VALUES.each do |key|
-          hash[key] = hash[key][0].to_s
+          hash[key] = hash.fetch(key, 0).to_s
         end
         FLOAT_VALUES.each do |key|
-          hash[key] = hash[key][0].from_german_to_f.to_german_s
+          hash[key] = hash.fetch(key, '0').from_german_to_f.to_german_s
         end
         ADJUST_BY_CANCELLATION.each do |key|
-          hash[key] = (@cancellation_factor * hash[key][0].from_german_to_f).to_german_s
+          hash[key] = (@cancellation_factor * hash.fetch(key, '0').from_german_to_f).to_german_s
         end
         ADJUST_BY_CANCELLATION_AND_SALESAMOUNT.each do |key|
-          hash[key] = (@cancellation_factor * @saleamount_factor * hash[key][0].from_german_to_f).to_german_s
+          hash[key] = (@cancellation_factor * @saleamount_factor * hash.fetch(key, '0').from_german_to_f).to_german_s
         end
         hash
-      end
-
-      def combine_hashes(list_of_rows)
-        list_of_rows.each_with_object(Hash.new {|h, k| h[k] = []}) do |row, hashes|
-          next if row.nil?
-          row.each do |k, v|
-            hashes[k] << v
-          end
-        end
       end
   end
 end

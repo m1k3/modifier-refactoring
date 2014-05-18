@@ -18,6 +18,10 @@ class NilEnumerator < Enumerator
       nil
     end
   end
+
+  def to_a
+    @enum.to_a
+  end
 end
 
 class Enumerator

@@ -16,9 +16,7 @@ module CMA
 
       input_enumerator = lazy_read(input)
 
-      combiner = combiner_from(input_enumerator)
-
-      merger = merger_from(combiner)
+      merger = merger_from(input_enumerator)
 
       write_output(output, merger)
     end
@@ -30,7 +28,7 @@ module CMA
         file_name = output.gsub('.txt', '')
         while merger.peek do
           CSV.open("#{file_name}_#{file_index}.txt", "wb", DEFAULT_WRITE_CSV_OPTIONS) do |csv|
-            csv << merger.peek.keys
+            csv << merger.peek.headers
             line_count = 1
             while merger.peek && line_count < LINES_PER_FILE
               csv << merger.next
@@ -41,14 +39,8 @@ module CMA
         end
       end
 
-      def combiner_from(input_enumerator)
-        Combiner.new do |value|
-          value[KEYWORD_UNIQUE_ID]
-        end.combine(input_enumerator).nil_enum
-      end
-
       def merger_from(combiner)
-        @merger.enum_for(combiner)
+        @merger.enum_for(combiner).nil_enum
       end
 
       def lazy_read(file)
@@ -56,7 +48,7 @@ module CMA
           CSV.foreach(file, DEFAULT_CSV_OPTIONS) do |row|
             yielder.yield(row)
           end
-        end
+        end.nil_enum
       end
   end
 end
