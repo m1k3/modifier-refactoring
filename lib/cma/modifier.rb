@@ -23,6 +23,7 @@ module CMA
 
 
     private
+
       def write_output(output, adjuster)
         file_index = 0
         file_name = output.gsub('.txt', '')
@@ -32,7 +33,7 @@ module CMA
             line_count = 1
             while adjuster.peek && line_count < LINES_PER_FILE
               csv << adjuster.next
-              line_count +=1
+              line_count += 1
             end
             file_index += 1
           end

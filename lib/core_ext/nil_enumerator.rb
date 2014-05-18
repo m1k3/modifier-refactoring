@@ -4,19 +4,15 @@ class NilEnumerator < Enumerator
   end
 
   def next
-    begin
-      @enum.next
-    rescue StopIteration
-      nil
-    end
+    @enum.next
+  rescue StopIteration
+    nil
   end
 
   def peek
-    begin
-      @enum.peek
-    rescue StopIteration
-      nil
-    end
+    @enum.peek
+  rescue StopIteration
+    nil
   end
 
   def to_a

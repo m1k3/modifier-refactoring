@@ -1,8 +1,12 @@
 require 'spec_helper'
 
 describe CMA::Modifier do
-  let(:output_location) { File.expand_path('../../fixtures/project_2012-07-27_2012-10-10_performancedata_0.txt', __FILE__) }
-  let(:sorted_location) { File.expand_path('../../fixtures/project_2012-07-27_2012-10-10_performancedata.txt.sorted', __FILE__) }
+  let(:output_location) do
+    File.expand_path('../../fixtures/project_2012-07-27_2012-10-10_performancedata_0.txt', __FILE__)
+  end
+  let(:sorted_location) do
+    File.expand_path('../../fixtures/project_2012-07-27_2012-10-10_performancedata.txt.sorted', __FILE__)
+  end
 
   before :each do
     FileUtils.rm_rf output_location
